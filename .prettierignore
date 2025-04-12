@@ -1,0 +1,8 @@
+# Ignore artifacts:
+dist
+package-lock.json
+package.json
+webpack.dev.js
+webpack.prod.js
+*.html
+.eslintrc.js
