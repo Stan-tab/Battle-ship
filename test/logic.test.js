@@ -41,5 +41,12 @@ test('test gameboard', () => {
 
 test('Playerbot class', () => {
 	const bot = new logic.playerBot();
-	console.log(bot.board.grid);
+	let num = 0;
+	for (let i = 0; i < bot.board.grid.length; i++) {
+		const element = bot.board.grid[i];
+		for (let l = 0; l < element.length; l++) {
+			if (element[l] === 0) num++;
+		}
+	}
+	expect(100 - num).toBe(15);
 });

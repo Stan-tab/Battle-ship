@@ -34,8 +34,7 @@ function gameBoard() {
 		return false;
 	}
 
-	this.placeShip = (arr, ship, direction = false) => {
-		if (this.ships.includes(ship)) return false;
+	this.placeShip = (arr, ship, direction = true) => {
 		const [x, y] = this.orientShip(arr, ship.length, direction);
 		const newArr = [];
 
@@ -46,7 +45,7 @@ function gameBoard() {
 			}
 		} else {
 			for (let i = 0; i < ship.length; i++) {
-				newArr.push([x, y + i]);
+				newArr.push([x + i, y]);
 			}
 		}
 		if (compArr(this.placedPos, newArr)) return false;
@@ -112,15 +111,25 @@ class player {
 class playerBot extends player {
 	constructor() {
 		super();
+		this.setShips();
+	}
+
+	setShips() {
+		const arr = [];
 		for (const item in this.ships) {
-			this.ships[item].forEach((e) => {
-				const arr = [
-					Math.floor(Math.random() * 11),
-					Math.floor(Math.random() * 11)
+			for (let i = 0; i < this.ships[item].length; i++) {
+				arr.push(this.ships[item][i]);
+			}
+		}
+		for (let i = 0; i < arr.length; i++) {
+			while (true) {
+				const nums = [
+					Math.floor(Math.random() * 10),
+					Math.floor(Math.random() * 10)
 				];
-				const dir = Math.floor(Math.random() * 2) === 0 ? false : true;
-				this.board.placeShip(arr, e, dir);
-			});
+				const dir = Math.floor(Math.random() * 2) === 0;
+				if (this.board.placeShip(nums, arr[i], dir)) break;
+			}
 		}
 	}
 }
