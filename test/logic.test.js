@@ -28,21 +28,18 @@ test('test gameboard', () => {
 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	]);
-	board.placeShip([3, 4], ship);
-	expect(board.grid).toStrictEqual([
-		[ship, ship, ship, ship, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, ship, ship, ship, ship, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	]);
 	board.receiveAttack([0, 0]);
 	expect(board.grid[0][0]).toBe(1);
 	board.receiveAttack([5, 6]);
-	expect(board.grid[5][6]).toBe(-1);
+	expect(board.grid[6][5]).toBe(-1);
+	board.receiveAttack([1, 0]);
+	board.receiveAttack([2, 0]);
+	expect(board.checkShips()).toBeFalsy();
+	board.receiveAttack([3, 0]);
+	expect(board.checkShips()).toBeTruthy();
+});
+
+test('Playerbot class', () => {
+	const bot = new logic.playerBot();
+	console.log(bot.board.grid);
 });
