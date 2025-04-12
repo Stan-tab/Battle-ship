@@ -41,4 +41,8 @@ test('test gameboard', () => {
 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	]);
+	board.receiveAttack([0, 0]);
+	expect(board.grid[0][0]).toBe(1);
+	board.receiveAttack([5, 6]);
+	expect(board.grid[5][6]).toBe(-1);
 });

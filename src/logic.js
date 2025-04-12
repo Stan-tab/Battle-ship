@@ -42,6 +42,17 @@ function gameBoard() {
 
 		return !direction ? [begin, y] : [x, begin];
 	};
+
+	this.receiveAttack = (arr) => {
+		const [x, y] = arr;
+		if(this.grid[x][y] === 1 || this.grid[x][y] === -1) return
+		if (this.grid[x][y] === 0) {
+			this.grid[x][y] = -1;
+			return;
+		}
+		this.grid[x][y].hit();
+		this.grid[x][y] = 1;
+	};
 }
 
 module.exports = { ship, gameBoard };
