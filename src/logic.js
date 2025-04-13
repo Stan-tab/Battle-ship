@@ -134,4 +134,4 @@ class playerBot extends player {
 	}
 }
 
-module.exports = { ship, gameBoard, player, playerBot };
+export { ship, gameBoard, player, playerBot };

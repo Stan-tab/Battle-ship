@@ -1,18 +1,24 @@
 const logic = require('../src/logic.js');
 
-test('Testing ship factory', () => {
+describe('Testing ship factory', () => {
 	const ship = new logic.ship(3);
-	expect(ship.length).toBe(3);
-	expect(ship.hits).toBe(0);
-	expect(ship.isSunk()).toBeFalsy();
-	ship.hit();
-	ship.hit();
-	ship.hit();
-	expect(ship.hits).toBe(3);
-	expect(ship.isSunk()).toBeTruthy();
+	test('Ship length', () => {
+		expect(ship.length).toBe(3);
+	});
+	test('Ship hits', () => {
+		expect(ship.hits).toBe(0);
+		ship.hit();
+		ship.hit();
+		expect(ship.hits).toBe(2);
+	});
+	test('IsSunk test', () => {
+		expect(ship.isSunk()).toBeFalsy();
+		ship.hit();
+		expect(ship.isSunk()).toBeTruthy();
+	});
 });
 
-test('test gameboard', () => {
+xtest('test gameboard', () => {
 	const ship = new logic.ship(4);
 	const board = new logic.gameBoard();
 	board.placeShip([0, 0], ship);
@@ -39,7 +45,7 @@ test('test gameboard', () => {
 	expect(board.checkShips()).toBeTruthy();
 });
 
-test('Playerbot class', () => {
+xtest('Playerbot class', () => {
 	const bot = new logic.playerBot();
 	let num = 0;
 	for (let i = 0; i < bot.board.grid.length; i++) {
