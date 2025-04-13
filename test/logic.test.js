@@ -56,8 +56,9 @@ describe('Gameboard test', () => {
 });
 
 describe('Player classes', () => {
+	const bot = new logic.playerBot();
+	const player = new logic.player();
 	test('Playerbot setting ships', () => {
-		const bot = new logic.playerBot();
 		let num = 0;
 		for (let i = 0; i < bot.board.grid.length; i++) {
 			const element = bot.board.grid[i];
@@ -66,5 +67,19 @@ describe('Player classes', () => {
 			}
 		}
 		expect(100 - num).toBe(15);
+	});
+	test('Bot attacks', () => {
+		bot.attack(player.board);
+		bot.attack(player.board);
+		bot.attack(player.board);
+		let num = 0;
+		for (let i = 0; i < player.board.grid.length; i++) {
+			const element = player.board.grid[i];
+			for (let l = 0; l < element.length; l++) {
+				if (element[l] === 0) num++;
+			}
+		}
+		// console.log(JSON.stringify(player.board.grid).split(']'));
+		expect(100 - num).toBe(3);
 	});
 });

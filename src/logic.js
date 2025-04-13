@@ -36,15 +36,11 @@ function gameBoard() {
 
 	this.placeShip = (arr, ship, direction = true) => {
 		const positions = this.orientShip(arr, ship.length, direction);
-
+		if (!positions) return false;
 		this.ships.push(ship);
 
-		if (compArr(this.placedPos, positions)) return false;
-		this.placedPos.push(...positions);
-		for (let i = 0; i < positions.length; i++) {
+		for (let i = 0; i < positions.length; i++)
 			this.grid[positions[i][1]][positions[i][0]] = ship;
-		}
-
 		return true;
 	};
 	this.orientShip = (arr, length, direction = false) => {
@@ -67,6 +63,8 @@ function gameBoard() {
 				newArr.push([begin + i, y]);
 			}
 		}
+		if (compArr(this.placedPos, newArr)) return false;
+		this.placedPos.push(...newArr);
 		return newArr;
 	};
 
@@ -113,6 +111,7 @@ class playerBot extends player {
 	constructor() {
 		super();
 		this.setShips();
+		this.attacked = [];
 	}
 
 	setShips() {
@@ -132,6 +131,31 @@ class playerBot extends player {
 				if (this.board.placeShip(nums, arr[i], dir)) break;
 			}
 		}
+	}
+
+	attack(board) {
+		function hasSim(arr1, arr2) {
+			if (arr1.length === 0) return false;
+			for (let i = 0; i < arr1.length; i++) {
+				const checker = [];
+				for (let l = 0; l < 2; l++) {
+					checker.push(arr1[i][l] === arr2[l]);
+				}
+				if (checker.includes(false)) return false;
+			}
+			return true;
+		}
+
+		let position;
+		while (1) {
+			position = [
+				Math.floor(Math.random() * 10),
+				Math.floor(Math.random() * 10)
+			];
+			if (!hasSim(this.attacked, position)) break;
+		}
+		board.receiveAttack(position);
+		this.attacked.push(position);
 	}
 }
 
