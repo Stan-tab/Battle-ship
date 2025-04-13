@@ -35,38 +35,39 @@ function gameBoard() {
 	}
 
 	this.placeShip = (arr, ship, direction = true) => {
-		const [x, y] = this.orientShip(arr, ship.length, direction);
-		const newArr = [];
+		const positions = this.orientShip(arr, ship.length, direction);
 
 		this.ships.push(ship);
-		if (direction) {
-			for (let i = 0; i < ship.length; i++) {
-				newArr.push([x, y + i]);
-			}
-		} else {
-			for (let i = 0; i < ship.length; i++) {
-				newArr.push([x + i, y]);
-			}
-		}
-		if (compArr(this.placedPos, newArr)) return false;
-		this.placedPos.push(...newArr);
-		for (let i = 0; i < newArr.length; i++) {
-			this.grid[newArr[i][0]][newArr[i][1]] = ship;
+
+		if (compArr(this.placedPos, positions)) return false;
+		this.placedPos.push(...positions);
+		for (let i = 0; i < positions.length; i++) {
+			this.grid[positions[i][1]][positions[i][0]] = ship;
 		}
 
-		if (newArr) return true;
+		return true;
 	};
 	this.orientShip = (arr, length, direction = false) => {
-		const [x, y] = arr;
+		let [x, y] = arr;
 		const cursor = Math.floor(length / 2);
 		let orient = x;
-		if (direction) orient = y;
+		if (!direction) orient = y;
 
 		let begin = orient - length + cursor;
 		if (begin < 0) begin = 0;
 		if (begin + length > 10) begin = 10 - length;
 
-		return !direction ? [begin, y] : [x, begin];
+		const newArr = [];
+		if (!direction) {
+			for (let i = 0; i < length; i++) {
+				newArr.push([x, begin + i]);
+			}
+		} else {
+			for (let i = 0; i < length; i++) {
+				newArr.push([begin + i, y]);
+			}
+		}
+		return newArr;
 	};
 
 	this.receiveAttack = (arr) => {
