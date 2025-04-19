@@ -11,7 +11,15 @@ function DOM() {
 
 	const mouseHandler = (e) => {
 		if (!this.currentShip) return;
-		console.log(e.target.getAttribute('x'), e.target.getAttribute('y'));
+		const position = [
+			+e.target.getAttribute('x'),
+			+e.target.getAttribute('y')
+		];
+		const set = this.player.board.orientShip(
+			position,
+			this.currentShip.length, true
+		);
+		console.log(JSON.stringify(set));
 	};
 
 	(function createCells() {
@@ -31,6 +39,7 @@ function DOM() {
 	})();
 
 	(() => {
+		//followCursor
 		function getClone(arr) {
 			for (let i = 0; i < arr.length; i++) {
 				if (!arr[i].classList) continue;
@@ -60,28 +69,10 @@ function DOM() {
 					Object.assign(pressed.style, {
 						position: 'fixed'
 					});
-					switch (getDivNodes([...ship.childNodes]).length) {
-						case 1:
-							if (this.player.ships.one.length === 0) break;
-							this.currentShip = this.player.ships.one[0];
-							this.player.ships.one.shift();
-							break;
-						case 2:
-							if (this.player.ships.two.length === 0) break;
-							this.currentShip = this.player.ships.two[0];
-							this.player.ships.two.shift();
-							break;
-						case 3:
-							if (this.player.ships.three.length === 0) break;
-							this.currentShip = this.player.ships.three[0];
-							this.player.ships.three.shift();
-							break;
-						case 4:
-							if (this.player.ships.four.length === 0) break;
-							this.currentShip = this.player.ships.four[0];
-							this.player.ships.four.shift();
-							break;
-					}
+					const length = getDivNodes([...ship.childNodes]).length;
+					if (this.player.ships[`${length}`].length === 0) return;
+					this.currentShip = this.player.ships[`${length}`][0];
+					this.player.ships[`${length}`].shift();
 					return;
 				}
 			};
@@ -91,7 +82,7 @@ function DOM() {
 			Object.assign(pressed.style, {
 				top: `${e.pageY - pressed.offsetHeight / 4}px`,
 				left: `${e.pageX - pressed.offsetWidth / 2}px`,
-				pointerEvents: "none",
+				pointerEvents: 'none'
 			});
 		};
 		document.onclick = () => {
@@ -104,7 +95,7 @@ function DOM() {
 			clone.classList.remove('ship');
 			Object.assign(pressed.style, {
 				position: 'static',
-				pointerEvents: "auto",
+				pointerEvents: 'auto'
 			});
 			pressed.style.removeProperty('top');
 			pressed.style.removeProperty('left');

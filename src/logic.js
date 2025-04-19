@@ -37,6 +37,7 @@ function gameBoard() {
 	this.placeShip = (arr, ship, direction = true) => {
 		const positions = this.orientShip(arr, ship.length, direction);
 		if (!positions) return false;
+		this.placedPos.push(...positions);
 		this.ships.push(ship);
 
 		for (let i = 0; i < positions.length; i++)
@@ -64,7 +65,6 @@ function gameBoard() {
 			}
 		}
 		if (compArr(this.placedPos, newArr)) return false;
-		this.placedPos.push(...newArr);
 		return newArr;
 	};
 
@@ -97,10 +97,10 @@ class player {
 		}
 
 		this.ships = {
-			four: createShips(2, 4),
-			three: createShips(1, 3),
-			two: createShips(1, 2),
-			one: createShips(2, 1)
+			"4": createShips(2, 4),
+			"3": createShips(1, 3),
+			"2": createShips(1, 2),
+			"1": createShips(2, 1)
 		};
 
 		this.board = new gameBoard();
