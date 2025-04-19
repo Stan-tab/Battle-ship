@@ -1,4 +1,5 @@
 :root {
+	--side: clamp(15rem, 45vw, 25rem);
 	background-color: rgb(199, 222, 217);
 }
 
@@ -34,12 +35,42 @@ header {
 	justify-content: space-around;
 	align-items: center;
 	padding: 10px;
-	>* {
-		--side: clamp(15rem, 45vw, 22rem);
+	> * {
 		width: var(--side);
 		height: var(--side);
 		display: grid;
 		grid-template-columns: repeat(10, 1fr);
 		border: 2px solid black;
 	}
+}
+
+.ships {
+	display: flex;
+	justify-content: space-between;
+	> * {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+	}
+}
+
+.ship > * {
+	width: calc(var(--side) / 10);
+	height: calc(var(--side) / 10);
+	background-color: rgba(89, 94, 148, 0.39);
+	outline: grey solid 0.5px;
+}
+
+.num {
+	margin: 0;
+	padding: 0;
+	color: white;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	width: 1.2rem;
+	height: 1.2rem;
+	background-color: rgb(70, 79, 81);
+	border-radius: 100%;
+	border: 1px solid black;
 }
