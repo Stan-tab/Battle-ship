@@ -18,25 +18,33 @@ const boards = [...document.querySelectorAll('.boards > *')];
 })();
 
 (function followMouse() {
+	function getClone(arr) {
+		for (let i = 0; i < arr.length; i++) {
+			if (!arr[i].classList) continue;
+			if ([...arr[i].classList].includes('clone')) return arr[i];
+		}
+	}
 	const ships = [...document.querySelectorAll('.ship')];
 	let pressed = null;
 	ships.forEach((ship) => {
 		let bool = false;
 		ship.onclick = () => {
 			bool = !bool;
-			const clone = ship.parentNode.childNodes[1];
+			const clone = getClone(ship.parentNode.childNodes);
 			if (bool) {
 				pressed = ship;
 				clone.classList.add('ship');
 				Object.assign(pressed.style, {
-					position: 'fixed',
-				})
+					position: 'fixed'
+				});
 				return;
 			}
 			clone.classList.remove('ship');
 			Object.assign(ship.style, {
 				position: 'static'
 			});
+			ship.style.removeProperty('top');
+			ship.style.removeProperty('left');
 			pressed = null;
 		};
 	});
