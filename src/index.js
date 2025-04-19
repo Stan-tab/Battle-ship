@@ -10,9 +10,41 @@ const boards = [...document.querySelectorAll('.boards > *')];
 			cell.setAttribute('y', `${Math.floor(i / 10)}`);
 			Object.assign(cell.style, {
 				backgroundColor: 'rgb(89 94 148 / 39%)',
-				outline: "solid 0.5px grey"
+				outline: 'solid 0.5px grey'
 			});
 			board.appendChild(cell);
 		}
 	});
+})();
+
+(function followMouse() {
+	const ships = [...document.querySelectorAll('.ship')];
+	let pressed = null;
+	ships.forEach((ship) => {
+		let bool = false;
+		ship.onclick = () => {
+			bool = !bool;
+			const clone = ship.parentNode.childNodes[1];
+			if (bool) {
+				pressed = ship;
+				clone.classList.add('ship');
+				Object.assign(pressed.style, {
+					position: 'fixed',
+				})
+				return;
+			}
+			clone.classList.remove('ship');
+			Object.assign(ship.style, {
+				position: 'static'
+			});
+			pressed = null;
+		};
+	});
+	window.onmousemove = (e) => {
+		if (!pressed) return;
+		Object.assign(pressed.style, {
+			top: `${e.pageY - pressed.offsetHeight / 4}px`,
+			left: `${e.pageX - pressed.offsetWidth / 2}px`
+		});
+	};
 })();
