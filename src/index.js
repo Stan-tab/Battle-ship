@@ -6,8 +6,18 @@ function DOM() {
 	this.player = new player();
 	this.playerBot = new playerBot();
 	this.currentShip = null;
+	this.rotate = false;
+	this.colored = [];
 
 	const boards = [...document.querySelectorAll('.boards > *')];
+
+	window.onkeydown = (e) => {
+		if (e.code === 'KeyR') this.rotate = !this.rotate;
+		if (!this.currentUiShip) return;
+		this.currentUiShip.style.transform = this.rotate
+			? 'rotate(90deg)'
+			: 'rotate(0deg)';
+	};
 
 	const mouseHandler = (e) => {
 		if (!this.currentShip) return;
@@ -15,10 +25,32 @@ function DOM() {
 			+e.target.getAttribute('x'),
 			+e.target.getAttribute('y')
 		];
+		if (this.currentShip.length === 1) {
+			if (this.rotate) {
+				position[0] += 1;
+			} else {
+				position[1] += 1;
+			}
+		}
 		const set = this.player.board.orientShip(
 			position,
-			this.currentShip.length, true
+			this.currentShip.length,
+			this.rotate
 		);
+		if (this.colored) {
+			this.colored.forEach((e) => {
+				e.style.backgroundColor = 'rgba(89, 94, 148, 0.39)';
+			});
+			this.colored = [];
+		}
+
+		set.forEach((e) => {
+			const element = document.querySelector(
+				`div[x="${e[0]}"][y="${e[1]}"]`
+			);
+			element.style.backgroundColor = '#42599a';
+			this.colored.push(element);
+		});
 		console.log(JSON.stringify(set));
 	};
 
@@ -55,7 +87,7 @@ function DOM() {
 			return arr;
 		}
 		const ships = [...document.querySelectorAll('.ship')];
-		let pressed = null;
+		this.currentUiShip = null;
 		let bool = false;
 		let prevBool = false;
 		let clone = null;
@@ -64,9 +96,9 @@ function DOM() {
 				bool = true;
 				clone = getClone(ship.parentNode.childNodes);
 				if (bool && !prevBool) {
-					pressed = ship;
+					this.currentUiShip = ship;
 					clone.classList.add('ship');
-					Object.assign(pressed.style, {
+					Object.assign(this.currentUiShip.style, {
 						position: 'fixed'
 					});
 					const length = getDivNodes([...ship.childNodes]).length;
@@ -78,10 +110,10 @@ function DOM() {
 			};
 		});
 		window.onmousemove = (e) => {
-			if (!pressed) return;
-			Object.assign(pressed.style, {
-				top: `${e.pageY - pressed.offsetHeight / 4}px`,
-				left: `${e.pageX - pressed.offsetWidth / 2}px`,
+			if (!this.currentUiShip) return;
+			Object.assign(this.currentUiShip.style, {
+				top: `${e.pageY - this.currentUiShip.offsetHeight / 2}px`,
+				left: `${e.pageX - this.currentUiShip.offsetWidth / 2}px`,
 				pointerEvents: 'none'
 			});
 		};
@@ -93,13 +125,14 @@ function DOM() {
 			if (!bool && !prevBool) return;
 			this.currentShip = null;
 			clone.classList.remove('ship');
-			Object.assign(pressed.style, {
-				position: 'static',
-				pointerEvents: 'auto'
+			Object.assign(this.currentUiShip.style, {
+				position: 'static'
 			});
-			pressed.style.removeProperty('top');
-			pressed.style.removeProperty('left');
-			pressed = null;
+			this.currentUiShip.style.removeProperty('transform');
+			this.currentUiShip.style.removeProperty('pointer-events');
+			this.currentUiShip.style.removeProperty('top');
+			this.currentUiShip.style.removeProperty('left');
+			this.currentUiShip = null;
 			clone = null;
 			bool = prevBool = false;
 		};
