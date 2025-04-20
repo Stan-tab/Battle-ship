@@ -1,7 +1,6 @@
 import './style.css';
-import { gameBoard, player, playerBot } from './logic';
+import { gameBoard, player, playerBot, ship } from './logic';
 
-// document.querySelector("div[x='2'][y='5']") //Reference for me
 function DOM() {
 	this.player = new player();
 	this.playerBot = new playerBot();
@@ -49,6 +48,9 @@ function DOM() {
 			});
 			this.removeColor = [];
 		}
+		this.stayColored.forEach((e) => {
+			e.style.backgroundColor = '#42599a';
+		});
 
 		if (!set) return;
 		set.forEach((e) => {
@@ -58,10 +60,6 @@ function DOM() {
 			element.style.backgroundColor = '#42599a';
 			this.removeColor.push(element);
 		});
-		this.stayColored.forEach((e) => {
-			e.style.backgroundColor = '#42599a';
-		});
-		console.log(JSON.stringify(set));
 	};
 
 	const clickHandler = (e) => {
@@ -78,6 +76,10 @@ function DOM() {
 			this.rotate
 		);
 		if (!set) return;
+		const p = document.querySelector(
+			`.ship${this.currentShip.length} > .num`
+		);
+		p.textContent = +p.textContent - 1;
 		arr.forEach((e) => {
 			const element = document.querySelector(
 				`div[x="${e[0]}"][y="${e[1]}"]`
@@ -126,18 +128,26 @@ function DOM() {
 		let bool = false;
 		let prevBool = false;
 		let clone = null;
+		let shipAmount = 0;
 		ships.forEach((ship) => {
 			ship.onclick = () => {
 				bool = true;
 				clone = getClone(ship.parentNode.childNodes);
 				if (bool && !prevBool) {
 					const length = getDivNodes([...ship.childNodes]).length;
-					if (this.player.ships[`${length}`].length === 0) return;
+					shipAmount = this.player.ships[`${length}`].length;
+					if (shipAmount === 0) {
+						prevBool = false;
+						return;
+					}
 					clone.classList.add('ship');
 					this.currentUiShip = ship;
 					this.currentShip = this.player.ships[`${length}`][0];
 					Object.assign(this.currentUiShip.style, {
-						position: 'fixed'
+						position: 'fixed',
+						transform: this.rotate
+							? 'rotate(90deg)'
+							: 'rotate(0deg)'
 					});
 					return;
 				}
@@ -153,6 +163,7 @@ function DOM() {
 		};
 		document.onclick = () => {
 			if (bool && !prevBool) {
+				if (shipAmount === 0) return;
 				prevBool = true;
 				return;
 			}
