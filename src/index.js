@@ -7,7 +7,8 @@ function DOM() {
 	this.playerBot = new playerBot();
 	this.currentShip = null;
 	this.rotate = false;
-	this.colored = [];
+	this.removeColor = [];
+	this.stayColored = [];
 
 	const boards = [...document.querySelectorAll('.boards > *')];
 
@@ -19,8 +20,7 @@ function DOM() {
 			: 'rotate(0deg)';
 	};
 
-	const mouseHandler = (e) => {
-		if (!this.currentShip) return;
+	const getPosition = (e) => {
 		const position = [
 			+e.target.getAttribute('x'),
 			+e.target.getAttribute('y')
@@ -32,26 +32,60 @@ function DOM() {
 				position[1] += 1;
 			}
 		}
+		return position;
+	};
+
+	const mouseHandler = (e) => {
+		if (!this.currentShip) return;
+		const position = getPosition(e);
 		const set = this.player.board.orientShip(
 			position,
 			this.currentShip.length,
 			this.rotate
 		);
-		if (this.colored) {
-			this.colored.forEach((e) => {
+		if (this.removeColor) {
+			this.removeColor.forEach((e) => {
 				e.style.backgroundColor = 'rgba(89, 94, 148, 0.39)';
 			});
-			this.colored = [];
+			this.removeColor = [];
 		}
 
+		if (!set) return;
 		set.forEach((e) => {
 			const element = document.querySelector(
 				`div[x="${e[0]}"][y="${e[1]}"]`
 			);
 			element.style.backgroundColor = '#42599a';
-			this.colored.push(element);
+			this.removeColor.push(element);
+		});
+		this.stayColored.forEach((e) => {
+			e.style.backgroundColor = '#42599a';
 		});
 		console.log(JSON.stringify(set));
+	};
+
+	const clickHandler = (e) => {
+		if (!this.currentShip) return;
+		const position = getPosition(e);
+		const arr = this.player.board.orientShip(
+			position,
+			this.currentShip.length,
+			this.rotate
+		);
+		const set = this.player.board.placeShip(
+			position,
+			this.currentShip,
+			this.rotate
+		);
+		if (!set) return;
+		arr.forEach((e) => {
+			const element = document.querySelector(
+				`div[x="${e[0]}"][y="${e[1]}"]`
+			);
+			element.style.backgroundColor = '#42599a';
+			this.stayColored.push(element);
+		});
+		this.player.ships[`${this.currentShip.length}`].shift();
 	};
 
 	(function createCells() {
@@ -66,6 +100,7 @@ function DOM() {
 				});
 				board.appendChild(cell);
 				cell.onmousemove = mouseHandler;
+				cell.onclick = clickHandler;
 			}
 		});
 	})();
@@ -96,21 +131,20 @@ function DOM() {
 				bool = true;
 				clone = getClone(ship.parentNode.childNodes);
 				if (bool && !prevBool) {
-					this.currentUiShip = ship;
+					const length = getDivNodes([...ship.childNodes]).length;
+					if (this.player.ships[`${length}`].length === 0) return;
 					clone.classList.add('ship');
+					this.currentUiShip = ship;
+					this.currentShip = this.player.ships[`${length}`][0];
 					Object.assign(this.currentUiShip.style, {
 						position: 'fixed'
 					});
-					const length = getDivNodes([...ship.childNodes]).length;
-					if (this.player.ships[`${length}`].length === 0) return;
-					this.currentShip = this.player.ships[`${length}`][0];
-					this.player.ships[`${length}`].shift();
 					return;
 				}
 			};
 		});
 		window.onmousemove = (e) => {
-			if (!this.currentUiShip) return;
+			if (!this.currentUiShip || !this.currentUiShip) return;
 			Object.assign(this.currentUiShip.style, {
 				top: `${e.pageY - this.currentUiShip.offsetHeight / 2}px`,
 				left: `${e.pageX - this.currentUiShip.offsetWidth / 2}px`,
@@ -120,6 +154,10 @@ function DOM() {
 		document.onclick = () => {
 			if (bool && !prevBool) {
 				prevBool = true;
+				return;
+			}
+			if (!this.currentUiShip) {
+				prevBool = false;
 				return;
 			}
 			if (!bool && !prevBool) return;
