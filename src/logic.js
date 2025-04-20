@@ -70,13 +70,14 @@ function gameBoard() {
 
 	this.receiveAttack = (arr) => {
 		const [x, y] = arr;
-		if (this.grid[y][x] === 1 || this.grid[y][x] === -1) return;
+		if (this.grid[y][x] === 1 || this.grid[y][x] === -1) return null;
 		if (this.grid[y][x] === 0) {
 			this.grid[y][x] = -1;
-			return;
+			return false;
 		}
 		this.grid[y][x].hit();
 		this.grid[y][x] = 1;
+		return true;
 	};
 
 	this.checkShips = () => {
@@ -97,10 +98,10 @@ class player {
 		}
 
 		this.ships = {
-			"4": createShips(2, 4),
-			"3": createShips(1, 3),
-			"2": createShips(1, 2),
-			"1": createShips(2, 1)
+			4: createShips(2, 4),
+			3: createShips(1, 3),
+			2: createShips(1, 2),
+			1: createShips(2, 1)
 		};
 
 		this.board = new gameBoard();
@@ -141,9 +142,9 @@ class playerBot extends player {
 				for (let l = 0; l < 2; l++) {
 					checker.push(arr1[i][l] === arr2[l]);
 				}
-				if (checker.includes(false)) return false;
+				if (!checker.includes(false)) return true;
 			}
-			return true;
+			return false;
 		}
 
 		let position;
@@ -154,8 +155,9 @@ class playerBot extends player {
 			];
 			if (!hasSim(this.attacked, position)) break;
 		}
-		board.receiveAttack(position);
+		const attacked = board.receiveAttack(position);
 		this.attacked.push(position);
+		return { position, attacked };
 	}
 }
 
